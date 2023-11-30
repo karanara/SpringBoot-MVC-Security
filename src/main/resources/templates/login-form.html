@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Custom Login Page</title>
+    <style>
+		.failed{
+			color:red
+		}
+		.logout{
+			color:darkgreen
+		}
+	</style>
 </head>
 <body>
 
 <h3>My Custom Login Page</h3>
+<div th:if="${param.error}">
+	<i class="failed">Sorry incorrect details entered</i>
+</div>
+<div th:if="${param.logout">
+	<i class="logout">your logged out successfully</i>
+</div>
 
 <form action="#" th:action="@{/authenticateTheUser}" method="POST">
 

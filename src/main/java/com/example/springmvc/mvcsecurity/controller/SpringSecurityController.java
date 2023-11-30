@@ -11,4 +11,16 @@ public class SpringSecurityController {
 
         return "home";
     }
+    
+    @GetMapping("/leaders")
+    public String getLeaders() {
+
+        return "leaders";
+    }
+    
+    @GetMapping("/systems")
+    public String getSystems() {
+
+        return "systems";
+    }
 }

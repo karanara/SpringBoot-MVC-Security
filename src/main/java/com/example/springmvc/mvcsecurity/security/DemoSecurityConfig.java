@@ -72,6 +72,9 @@ public class DemoSecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                         configurer
+                                .requestMatchers("/").hasRole("EMPLOYEE")
+                                .requestMatchers("/leaders/**").hasRole("MANAGER")
+                                .requestMatchers("/systems/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(form ->
@@ -79,7 +82,7 @@ public class DemoSecurityConfig {
                                 .loginPage("/showCustomLoginForm")
                                 .loginProcessingUrl("/authenticateTheUser")
                                 .permitAll()
-                );
+                ).logout(logout->logout.permitAll());
 
         return http.build();
     }

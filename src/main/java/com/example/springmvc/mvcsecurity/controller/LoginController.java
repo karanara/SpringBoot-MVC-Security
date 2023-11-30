@@ -8,6 +8,8 @@ public class LoginController {
 
 	@GetMapping("/showCustomLoginForm")
 	public String showCustomLoginForm() {
-		return "login-form.html";
+		return "fancy-login";
 	}
+	
+	
 }
