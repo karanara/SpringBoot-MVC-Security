@@ -23,4 +23,10 @@ public class SpringSecurityController {
 
         return "systems";
     }
+    
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+
+        return "access-denied";
+    }
 }

@@ -1,49 +1,30 @@
 package com.example.springmvc.mvcsecurity.security;
 
-/*import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-public class DemoSecurityConfig {
+import javax.sql.DataSource;
 
-	@Bean
-	public InMemoryUserDetailsManager userDetailsManager() {
-		UserDetails john= User.builder().username("john").password("{noop}/john123").roles("EMPLOYEE").build();
-		UserDetails mary = User.builder().username("mary").password("{noop}/john123").roles("EMPLOYEE","MANAGER").build();
-		UserDetails susan= User.builder().username("susan").password("{noop}/john123").roles("EMPLOYEE","MANAGER","ADMIN").build();
-		return new InMemoryUserDetailsManager(john,mary,susan);
-	}
-	
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-		
-		http.authorizeHttpRequests(
-				configurer->configurer.anyRequest().authenticated())
-		.formLogin(
-				form->form.loginPage("/showCustomLoginPage").loginProcessingUrl("/authenticateTheUser").permitAll()
-				);
-		//spring gives the benefit of checking the user details from the page behind the scenes
-		
-		return http.build();
-	}
-}*/
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class DemoSecurityConfig {
 
-    @Bean
+	@Bean
+	public UserDetailsManager userDetailsManager(DataSource dataSource) {
+		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+		jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id,pw,active from members where user_id=?");
+		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_id,role from roles where user_id=?" );
+		return jdbcUserDetailsManager;
+		
+	}
+    /*@Bean
     public InMemoryUserDetailsManager userDetailsManager() {
 
         UserDetails john = User.builder()
@@ -65,7 +46,7 @@ public class DemoSecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(john, mary, susan);
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -82,7 +63,9 @@ public class DemoSecurityConfig {
                                 .loginPage("/showCustomLoginForm")
                                 .loginProcessingUrl("/authenticateTheUser")
                                 .permitAll()
-                ).logout(logout->logout.permitAll());
+                ).logout(logout->logout.permitAll())
+                .exceptionHandling(configurer->configurer.accessDeniedPage("/access-denied"));
+                
 
         return http.build();
     }
